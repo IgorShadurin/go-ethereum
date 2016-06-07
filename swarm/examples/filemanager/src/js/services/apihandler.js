@@ -49,7 +49,7 @@
                     path = path + '/';
                 }
 
-                $http.post("files" + path + 'files.json', data).success(function (data) {
+                $http.get("files" + path + 'files.json', data).success(function (data) {
                     dfHandler(data, deferred);
                 }).error(function (data) {
                     dfHandler(data, deferred, 'Unknown error listing, check the response');
@@ -165,7 +165,7 @@
                 self.inprocess = true;
                 self.error = '';
 
-                $http.post("files" + itemPath, data).success(function (data) {
+                $http.get("files" + itemPath, data).success(function (data) {
                     self.deferredHandler({"result": data}, deferred);
                 }).error(function (data) {
                     self.deferredHandler(data, deferred, $translate.instant('error_getting_content'));
