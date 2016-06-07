@@ -42,140 +42,20 @@
 
                 self.inprocess = true;
                 self.error = '';
-                // todo get files from directory
-                dfHandler({
-                    "result": [
-                        {
-                        "time": "07:09",
-                        "day": "7",
-                        "month": "Jun",
-                        "size": "4096",
-                        "group": "860",
-                        "user": "igor.shadurin@gmail.com",
-                        "number": "6",
-                        "rights": "drwxr-xr-x",
-                        "type": "dir",
-                        "name": "images",
-                        "date": "2016-06-07 09:21:40"
-                    }, {
-                        "time": "15:10",
-                        "day": "6",
-                        "month": "Jun",
-                        "size": "4096",
-                        "group": "860",
-                        "user": "igor.shadurin@gmail.com",
-                        "number": "3",
-                        "rights": "drwxr-xr-x",
-                        "type": "dir",
-                        "name": "src",
-                        "date": "2016-06-07 09:21:40"
-                    }, {
-                        "time": "03:11",
-                        "day": "7",
-                        "month": "Jun",
-                        "size": "4096",
-                        "group": "860",
-                        "user": "igor.shadurin@gmail.com",
-                        "number": "3",
-                        "rights": "drwxr-xr-x",
-                        "type": "dir",
-                        "name": "test",
-                        "date": "2016-06-07 09:21:40"
-                    }, {
-                        "time": "04:04",
-                        "day": "7",
-                        "month": "Jun",
-                        "size": "2871635",
-                        "group": "860",
-                        "user": "igor.shadurin@gmail.com",
-                        "number": "1",
-                        "rights": "-rw-r--r--",
-                        "type": "file",
-                        "name": "1465283027569196928552.jpg",
-                        "date": "2016-06-07 09:21:40"
-                    }, {
-                        "time": "14:44",
-                        "day": "6",
-                        "month": "Jun",
-                        "size": "8714",
-                        "group": "860",
-                        "user": "igor.shadurin@gmail.com",
-                        "number": "1",
-                        "rights": "-rw-r--r--",
-                        "type": "file",
-                        "name": "Blank.xlsx.xml",
-                        "date": "2016-06-07 09:21:40"
-                    }, {
-                        "time": "20:06",
-                        "day": "6",
-                        "month": "Jun",
-                        "size": "8082",
-                        "group": "860",
-                        "user": "igor.shadurin@gmail.com",
-                        "number": "1",
-                        "rights": "-rw-r--r--",
-                        "type": "file",
-                        "name": "Errors10.xlsb",
-                        "date": "2016-06-07 09:21:40"
-                    }, {
-                        "time": "15:11",
-                        "day": "6",
-                        "month": "Jun",
-                        "size": "79821",
-                        "group": "860",
-                        "user": "igor.shadurin@gmail.com",
-                        "number": "1",
-                        "rights": "-rw-r--r--",
-                        "type": "file",
-                        "name": "Lol.pdf",
-                        "date": "2016-06-07 09:21:40"
-                    }, {
-                        "time": "14:58",
-                        "day": "6",
-                        "month": "Jun",
-                        "size": "47513",
-                        "group": "860",
-                        "user": "igor.shadurin@gmail.com",
-                        "number": "1",
-                        "rights": "-rw-r--r--",
-                        "type": "file",
-                        "name": "companies.csv",
-                        "date": "2016-06-07 09:21:40"
-                    }, {
-                        "time": "03:23",
-                        "day": "7",
-                        "month": "Jun",
-                        "size": "0",
-                        "group": "860",
-                        "user": "igor.shadurin@gmail.com",
-                        "number": "1",
-                        "rights": "-rw-r--r--",
-                        "type": "file",
-                        "name": "test.zip",
-                        "date": "2016-06-07 09:21:40"
-                    }, {
-                        "time": "12:48",
-                        "day": "6",
-                        "month": "Jun",
-                        "size": "8",
-                        "group": "860",
-                        "user": "igor.shadurin@gmail.com",
-                        "number": "1",
-                        "rights": "-rw-r--r--",
-                        "type": "file",
-                        "name": "ttttttttindex.html",
-                        "date": "2016-06-07 09:21:40"
-                    }]
-                }, deferred);
+
 
                 self.inprocess = false;
-                /*$http.post(apiUrl, data).success(function(data) {
-                 dfHandler(data, deferred);
-                 }).error(function(data) {
-                 dfHandler(data, deferred, 'Unknown error listing, check the response');
-                 })['finally'](function() {
-                 self.inprocess = false;
-                 });*/
+                if (path.slice(-1) != '/') {
+                    path = path + '/';
+                }
+
+                $http.post("files" + path + 'files.json', data).success(function (data) {
+                    dfHandler(data, deferred);
+                }).error(function (data) {
+                    dfHandler(data, deferred, 'Unknown error listing, check the response');
+                })['finally'](function () {
+                    self.inprocess = false;
+                });
                 return deferred.promise;
             };
 
@@ -284,8 +164,9 @@
 
                 self.inprocess = true;
                 self.error = '';
-                $http.post(apiUrl, data).success(function (data) {
-                    self.deferredHandler(data, deferred);
+
+                $http.post("files" + itemPath, data).success(function (data) {
+                    self.deferredHandler({"result": data}, deferred);
                 }).error(function (data) {
                     self.deferredHandler(data, deferred, $translate.instant('error_getting_content'));
                 })['finally'](function () {
@@ -337,34 +218,36 @@
             };
 
             ApiHandler.prototype.getUrl = function (apiUrl, path) {
-                var data = {
-                    action: 'download',
-                    path: path
-                };
-                return path && [apiUrl, $.param(data)].join('?');
+                /*var data = {
+                 action: 'download',
+                 path: path
+                 };
+                 return path && [apiUrl, $.param(data)].join('?');*/
+                return "files" + path;
             };
 
             ApiHandler.prototype.download = function (apiUrl, itemPath, toFilename, downloadByAjax, forceNewWindow) {
                 var self = this;
-                var url = this.getUrl(apiUrl, itemPath);
+                //var url = this.getUrl(apiUrl, itemPath);
 
-                if (!downloadByAjax || forceNewWindow || !$window.saveAs) {
-                    !$window.saveAs && $window.console.error('Your browser dont support ajax download, downloading by default');
-                    return !!$window.open(url, '_blank', '');
-                }
+                return !!$window.open("files" + itemPath, '_blank', '');
+                /* if (!downloadByAjax || forceNewWindow || !$window.saveAs) {
+                 !$window.saveAs && $window.console.error('Your browser dont support ajax download, downloading by default');
+                 return !!$window.open(url, '_blank', '');
+                 }*/
 
-                var deferred = $q.defer();
-                self.inprocess = true;
-                $http.get(url).success(function (data) {
-                    var bin = new $window.Blob([data]);
-                    deferred.resolve(data);
-                    $window.saveAs(bin, toFilename);
-                }).error(function (data) {
-                    self.deferredHandler(data, deferred, $translate.instant('error_downloading'));
-                })['finally'](function () {
-                    self.inprocess = false;
-                });
-                return deferred.promise;
+                /*var deferred = $q.defer();
+                 self.inprocess = true;
+                 $http.get(url).success(function (data) {
+                 var bin = new $window.Blob([data]);
+                 deferred.resolve(data);
+                 $window.saveAs(bin, toFilename);
+                 }).error(function (data) {
+                 self.deferredHandler(data, deferred, $translate.instant('error_downloading'));
+                 })['finally'](function () {
+                 self.inprocess = false;
+                 });
+                 return deferred.promise;*/
             };
 
             ApiHandler.prototype.downloadMultiple = function (apiUrl, items, toFilename, downloadByAjax, forceNewWindow) {
