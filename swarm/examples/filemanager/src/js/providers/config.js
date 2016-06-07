@@ -1,9 +1,9 @@
-(function(angular) {
+(function (angular) {
     'use strict';
-    angular.module('FileManagerApp').provider('fileManagerConfig', function() {
+    angular.module('FileManagerApp').provider('fileManagerConfig', function () {
 
         var values = {
-            appName: 'angular-filemanager v1.5',
+            appName: 'SWARM File Manager',
             defaultLang: 'en',
 
             listUrl: 'bridges/php/handler.php',
@@ -30,12 +30,12 @@
                 move: true,
                 copy: true,
                 edit: true,
-                changePermissions: true,
-                compress: true,
-                compressChooseName: true,
-                extract: true,
+                changePermissions: false,
+                compress: false,
+                compressChooseName: false,
+                extract: false,
                 download: true,
-                downloadMultiple: true,
+                downloadMultiple: false,
                 preview: true,
                 remove: true
             },
@@ -56,7 +56,7 @@
         };
 
         return {
-            $get: function() {
+            $get: function () {
                 return values;
             },
             set: function (constants) {
