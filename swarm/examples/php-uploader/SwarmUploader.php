@@ -2,7 +2,8 @@
 
 class SwarmUploader
 {
-    public $url = 'http://localhost:8500';
+    //public $url = 'http://localhost:8500';
+    public $url = 'http://swarm-gateways.net';
 
     public function uploadText($text)
     {
@@ -39,21 +40,38 @@ class SwarmUploader
 
     public function uploadDirectory($directory)
     {
+        $directory = realpath($directory) . DIRECTORY_SEPARATOR;
         $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory), RecursiveIteratorIterator::SELF_FIRST);
+
+        $entries = [];
         foreach ($files as $item) {
+            if (in_array(basename($item), ['.', '..']) || is_dir($item)) {
+                continue;
+            }
+
+            $item = str_replace($directory, '', $item);
             $hash = $this->uploadFile($item);
+
+            $entry = [
+                'hash' => $hash,
+                'contentType' => 'text/plain',
+                'path' => $item,
+            ];
             $data = [
-                'entries' => [
-                    [
-                        'hash' => $hash,
-                        'contentType' => 'text/plain',
-                        'path' => '',
-                    ],
-                ],
+                'entries' => [$entry],
             ];
 
             $json = json_encode($data);
             $hash = $this->uploadText($json);
+            $entry['hash'] = $hash;
+            $entries[] = $entry;
+            echo $item . "\r\n";
+            echo $hash . "\r\n";
         }
+
+        echo "So, result\r\n";
+        echo $this->uploadText(json_encode([
+            'entries' => $entries,
+        ]));
     }
 }

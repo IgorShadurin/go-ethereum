@@ -3,4 +3,10 @@
 include_once 'SwarmUploader.php';
 $uploader = new SwarmUploader();
 
-echo $uploader->uploadDirectory('Z:\Ethereum\git-experiments\go-ethereum\swarm\examples\filemanager');
+if (!isset($argv[1])) {
+    echo 'First argument must be application path';
+    return;
+}
+
+$path = $argv[1];
+echo $uploader->uploadDirectory($path);
