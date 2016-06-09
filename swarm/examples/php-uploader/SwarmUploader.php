@@ -26,19 +26,6 @@ class SwarmUploader
         return $this->uploadText($text);
     }
 
-    public function uploadDirectoryInfo($directory)
-    {
-        $this->uploadText(json_encode([
-            'entries' => [
-                [
-                    'hash' => '',
-                    'contentType' => '',
-                    'path' => $directory,
-                ]
-            ],
-        ]));
-    }
-
     public function getMimeType($fileName)
     {
         $info = pathinfo($fileName);
