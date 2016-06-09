@@ -4,6 +4,7 @@ class SwarmUploader
 {
     //public $url = 'http://localhost:8500';
     public $url = 'http://swarm-gateways.net';
+    public $indexFile = 'index.html';
 
     public function uploadText($text)
     {
@@ -38,6 +39,26 @@ class SwarmUploader
         ]));
     }
 
+    public function getMimeType($fileName)
+    {
+        $info = pathinfo($fileName);
+        $extension = $info['extension'];
+        if ($extension == 'css') {
+            return 'text/css';
+        }
+
+        $finfo = new finfo(FILEINFO_MIME);
+        $result = $finfo->file($fileName);
+        $exploded = explode(';', $result);
+
+        return $exploded[0];
+    }
+
+    public function getUrlByHash($hash)
+    {
+        return $this->url . '/bzz:/' . $hash . '/';
+    }
+
     public function uploadDirectory($directory)
     {
         $directory = realpath($directory) . DIRECTORY_SEPARATOR;
@@ -49,28 +70,23 @@ class SwarmUploader
                 continue;
             }
 
-            $item = str_replace($directory, '', $item);
+            $mime = $this->getMimeType($item);
             $hash = $this->uploadFile($item);
+            $item = str_replace($directory, '', $item);
+            if ($item == $this->indexFile) {
+                $item = '';
+            }
 
             $entry = [
                 'hash' => $hash,
-                'contentType' => 'text/plain',
+                'contentType' => $mime,
                 'path' => str_replace('\\', '/', $item),
             ];
-            $data = [
-                'entries' => [$entry],
-            ];
-
-            $json = json_encode($data);
-            $hash = $this->uploadText($json);
             $entry['hash'] = $hash;
             $entries[] = $entry;
-            echo $entry['path'] . "\r\n";
-            echo $hash . "\r\n";
         }
 
-        echo "So, result\r\n";
-        echo $this->uploadText(json_encode([
+        return $this->uploadText(json_encode([
             'entries' => $entries,
         ]));
     }

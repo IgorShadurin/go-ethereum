@@ -9,4 +9,7 @@ if (!isset($argv[1])) {
 }
 
 $path = $argv[1];
-echo $uploader->uploadDirectory($path);
+$hash = $uploader->uploadDirectory($path);
+echo "Application uploaded!\r\n";
+echo "Open this url in browser:\r\n";
+echo $uploader->getUrlByHash($hash) . "\r\n";
