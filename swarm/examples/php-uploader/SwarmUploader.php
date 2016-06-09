@@ -55,7 +55,7 @@ class SwarmUploader
             $entry = [
                 'hash' => $hash,
                 'contentType' => 'text/plain',
-                'path' => $item,
+                'path' => str_replace('\\', '/', $item),
             ];
             $data = [
                 'entries' => [$entry],
@@ -65,7 +65,7 @@ class SwarmUploader
             $hash = $this->uploadText($json);
             $entry['hash'] = $hash;
             $entries[] = $entry;
-            echo $item . "\r\n";
+            echo $entry['path'] . "\r\n";
             echo $hash . "\r\n";
         }
 
