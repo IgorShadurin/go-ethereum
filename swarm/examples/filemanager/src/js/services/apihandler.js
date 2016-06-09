@@ -348,14 +348,38 @@
             ApiHandler.prototype.createFolder = function (apiUrl, path) {
                 var self = this;
                 var deferred = $q.defer();
-                var data = {
-                    action: 'createFolder',
-                    newPath: path
-                };
+                path = path.splice(1) + "/files.json";
 
                 self.inprocess = true;
                 self.error = '';
-                $http.post(apiUrl, data).success(function (data) {
+
+                var json = JSON.stringify({
+                    "result": [
+                        {
+                            "time": "04:04",
+                            "day": "7",
+                            "month": "Jun",
+                            "size": "1494",
+                            "group": "860",
+                            "user": "igor.shadurin@gmail.com",
+                            "number": "1",
+                            "rights": "-rw-r--r--",
+                            "type": "file",
+                            "realName": path,
+                            "name": "DAP.txt",
+                            "date": "2016-06-07 09:21:40"
+                        }
+                    ]
+                });
+                $http.put("bzz:", {
+                    "entries": [
+                        {
+                            "hash": "",
+                            "contentType": "text/json",
+                            "path": path
+                        }
+                    ]
+                }).success(function (data) {
                     self.deferredHandler(data, deferred);
                 }).error(function (data) {
                     self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
