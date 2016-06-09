@@ -25,11 +25,11 @@
             sidebar: true,
             breadcrumb: true,
             allowedActions: {
-                upload: true,
-                rename: true,
-                move: true,
-                copy: true,
-                edit: true,
+                upload: false,
+                rename: false,
+                move: false,
+                copy: false,
+                edit: false,
                 changePermissions: false,
                 compress: false,
                 compressChooseName: false,
@@ -37,7 +37,7 @@
                 download: true,
                 downloadMultiple: false,
                 preview: true,
-                remove: true
+                remove: false
             },
 
             multipleDownloadFileName: 'angular-filemanager.zip',
