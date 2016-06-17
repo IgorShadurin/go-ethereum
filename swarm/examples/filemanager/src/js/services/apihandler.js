@@ -31,6 +31,8 @@
             };
 
             ApiHandler.prototype.list = function (apiUrl, path, customDeferredHandler) {
+                console.log(path);
+
                 var self = this;
                 var dfHandler = customDeferredHandler || self.deferredHandler;
                 var deferred = $q.defer();
@@ -42,9 +44,24 @@
 
                 self.inprocess = true;
                 self.error = '';
-
-
                 self.inprocess = false;
+
+                // if path starts from swarm: - get files list by bzzr protocol
+                if (path.indexOf('swarm:') === 0) {
+                    // todo get files list from root file
+                    var hash = path.replace('swarm:/', '');
+                    $http.get('http://localhost:8500/bzzr:' + hash, data).success(function (data) {
+                        console.log(data);
+                        dfHandler(data, deferred);
+                    }).error(function (data) {
+                        dfHandler(data, deferred, 'Unknown error listing, check the response');
+                    })['finally'](function () {
+                        self.inprocess = false;
+                    });
+
+                    return deferred.promise;
+                }
+
                 if (path.slice(-1) != '/') {
                     path = path + '/';
                 }
