@@ -47,12 +47,29 @@
                 self.inprocess = false;
 
                 // if path starts from swarm: - get files list by bzzr protocol
-                if (path.indexOf('swarm:') === 0) {
-                    // todo get files list from root file
-                    var hash = path.replace('swarm:/', '');
-                    $http.get('http://localhost:8500/bzzr:' + hash, data).success(function (data) {
+                if (path.indexOf('/swarm:') === 0) {
+                    var hash = path.replace('/swarm:/', '');
+                    $http.get('http://localhost:8500/bzzr:/' + hash, data).success(function (data) {
                         console.log(data);
-                        dfHandler(data, deferred);
+                        var convertedData = {"result": []};
+                        $.each(data.entries, function (k, v) {
+                            console.log(v);
+                            convertedData.result.push({
+                                "time": "07:09",
+                                "day": "7",
+                                "month": "Jun",
+                                "size": "4096",
+                                "group": "860",
+                                "user": "igor.shadurin@gmail.com",
+                                "number": "6",
+                                "rights": "drwxr-xr-x",
+                                "type": "name",
+                                "realName": v.path,
+                                "name": v.path.split("/").pop(),
+                                "date": "2016-06-07 09:21:40"
+                            });
+                        });
+                        dfHandler(convertedData, deferred);
                     }).error(function (data) {
                         dfHandler(data, deferred, 'Unknown error listing, check the response');
                     })['finally'](function () {
@@ -67,6 +84,7 @@
                 }
 
                 $http.get("files" + path + 'files.json', data).success(function (data) {
+                    console.log(data);
                     dfHandler(data, deferred);
                 }).error(function (data) {
                     dfHandler(data, deferred, 'Unknown error listing, check the response');
