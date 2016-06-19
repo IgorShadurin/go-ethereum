@@ -2,8 +2,8 @@
 
 class SwarmUploader
 {
-    //public $url = 'http://localhost:8500';
-    public $url = 'http://swarm-gateways.net';
+    public $url = 'http://localhost:8500';
+    //public $url = 'http://swarm-gateways.net';
     public $indexFile = 'index.html';
 
     public function uploadText($text)

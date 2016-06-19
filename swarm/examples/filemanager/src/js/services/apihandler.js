@@ -49,7 +49,7 @@
                 // if path starts from swarm: - get files list by bzzr protocol
                 if (path.indexOf('/swarm:') === 0) {
                     var hash = path.replace('/swarm:/', '');
-                    $http.get('http://localhost:8500/bzzr:/' + hash, data).success(function (data) {
+                    $http.get('/bzzr:/' + hash, data).success(function (data) {
                         console.log(data);
                         var convertedData = {"result": []};
                         $.each(data.entries, function (k, v) {
@@ -65,7 +65,7 @@
                                 "rights": "drwxr-xr-x",
                                 "type": "name",
                                 "realName": v.path,
-                                "name": v.path.split("/").pop(),
+                                "name": v.path,//.split("/").pop(),
                                 "date": "2016-06-07 09:21:40"
                             });
                         });
