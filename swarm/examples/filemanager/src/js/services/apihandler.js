@@ -11,6 +11,22 @@
                 this.error = '';
             };
 
+            ApiHandler.prototype.fixUrl = function (url) {
+                function getCookie(name) {
+                    var matches = document.cookie.match(new RegExp(
+                        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+                    ));
+                    return matches ? decodeURIComponent(matches[1]) : undefined;
+                }
+
+                // if is_debug enabled you can use swarm via php proxy
+                if (getCookie('is_debug') == 1) {
+                    url = url.replace('/bzz:', '/proxy/bzz.php').replace('/bzzr:', '/proxy/bzzr.php');
+                }
+
+                return url;
+            };
+
             ApiHandler.prototype.deferredHandler = function (data, deferred, defaultMsg) {
                 if (!data || typeof data !== 'object') {
                     this.error = 'Bridge response error, please check the docs';
@@ -49,7 +65,7 @@
                 // if path starts from swarm: - get files list by bzzr protocol
                 if (path.indexOf('/swarm:') === 0) {
                     var hash = path.replace('/swarm:/', '');
-                    $http.get('/bzzr:/' + hash, data).success(function (data) {
+                    $http.get(this.fixUrl('/bzzr:/') + hash, data).success(function (data) {
                         console.log(data);
                         var convertedData = {"result": []};
                         $.each(data.entries, function (k, v) {
