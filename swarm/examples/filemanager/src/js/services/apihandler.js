@@ -47,8 +47,6 @@
             };
 
             ApiHandler.prototype.list = function (apiUrl, path, customDeferredHandler) {
-                console.log(path);
-
                 var self = this;
                 var dfHandler = customDeferredHandler || self.deferredHandler;
                 var deferred = $q.defer();
@@ -62,6 +60,7 @@
                 self.error = '';
                 self.inprocess = false;
 
+                console.log(path);
                 // if path starts from swarm: - get files list by bzzr protocol
                 if (path.indexOf('/swarm:') === 0) {
                     var hash = path.replace('/swarm:/', '');
