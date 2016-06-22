@@ -1,6 +1,6 @@
-(function(angular) {
+(function (angular) {
     'use strict';
-    angular.module('FileManagerApp').config(['$translateProvider', function($translateProvider) {
+    angular.module('FileManagerApp').config(['$translateProvider', function ($translateProvider) {
         $translateProvider.useSanitizeValueStrategy(null);
 
         $translateProvider.translations('en', {
@@ -13,7 +13,7 @@
             german: 'German',
             hebrew: 'Hebrew',
             slovak: 'Slovak',
-            chinese:'Chinese',
+            chinese: 'Chinese',
             russian: 'Russian',
             ukrainian: 'Ukrainian',
             turkish: 'Turkish',
@@ -94,7 +94,9 @@
             open: 'Open',
             these_elements: 'these {{total}} elements',
             new_folder: 'New folder',
-            download_as_zip: 'Download as ZIP'
+            download_as_zip: 'Download as ZIP',
+            upload_file_to_root: 'Upload file to root folder',
+            select_root_file: 'Select root file'
         });
 
         $translateProvider.translations('he', {
@@ -107,7 +109,7 @@
             german: 'גרמנית',
             hebrew: 'עברי',
             slovak: 'סלובקי',
-            chinese:'סִינִית',
+            chinese: 'סִינִית',
             russian: 'רוּסִי',
             ukrainian: 'אוקראיני',
             turkish: 'טורקי',
@@ -200,7 +202,7 @@
             german: 'Alemão',
             hebrew: 'Hebraico',
             slovak: 'Eslovaco',
-            chinese:'Chinês',
+            chinese: 'Chinês',
             russian: 'Russo',
             ukrainian: 'Ucraniano',
             turkish: 'Turco',
@@ -294,7 +296,7 @@
             german: 'Alemán',
             hebrew: 'Hebreo',
             slovak: 'Eslovaco',
-            chinese:'Chino',
+            chinese: 'Chino',
             russian: 'Ruso',
             ukrainian: 'Ucraniano',
             turkish: 'Turco',
@@ -388,7 +390,7 @@
             german: 'Allemand',
             hebrew: 'Hébreu',
             slovak: 'Slovaque',
-            chinese:'Chinois',
+            chinese: 'Chinois',
             russian: 'Russe',
             ukrainian: 'Ukrainien',
             turkish: 'Turc',
@@ -482,7 +484,7 @@
             german: 'Deutsch',
             hebrew: 'Hebräisch',
             slovak: 'Slowakisch',
-            chinese:'Chinesisch',
+            chinese: 'Chinesisch',
             russian: 'Russisch',
             ukrainian: 'Ukrainisch',
             turkish: 'Türkisch',
@@ -576,7 +578,7 @@
             german: 'Nemčina',
             hebrew: 'Hebrejčina',
             slovak: 'Slovenčina',
-            chinese:'Čínština',
+            chinese: 'Čínština',
             russian: 'Ruský',
             ukrainian: 'Ukrajinský',
             turkish: 'Turecký',
@@ -669,7 +671,7 @@
             german: '德语',
             hebrew: '希伯来语',
             slovak: '斯洛伐克语',
-            chinese:'中文',
+            chinese: '中文',
             russian: '俄語',
             ukrainian: '烏克蘭',
             turkish: '土耳其',
@@ -762,7 +764,7 @@
             german: 'Немецкий',
             hebrew: 'Хинди',
             slovak: 'Словацкий',
-            chinese:'Китайский',
+            chinese: 'Китайский',
             russian: 'русский',
             ukrainian: 'украинец',
             turkish: 'турецкий',
@@ -855,7 +857,7 @@
             german: 'Німецька',
             hebrew: 'Хінді',
             slovak: 'Словацька',
-            chinese:'Китайська',
+            chinese: 'Китайська',
             russian: 'російський',
             ukrainian: 'український',
             turkish: 'турецька',
@@ -938,7 +940,7 @@
             new_folder: 'Нова папка',
             download_as_zip: 'Download as ZIP'
         });
-        
+
         $translateProvider.translations('tr', {
             filemanager: 'Dosya Yöneticisi',
             language: 'Dil',
@@ -949,7 +951,7 @@
             german: 'Almanca',
             hebrew: 'İbranice',
             slovak: 'Slovakça',
-            chinese:'Çince',
+            chinese: 'Çince',
             russian: 'Rusça',
             ukrainian: 'Ukrayna',
             turkish: 'Türk',
