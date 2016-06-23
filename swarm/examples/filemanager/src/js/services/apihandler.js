@@ -24,6 +24,8 @@
                     url = url.replace('/bzz:', '/proxy/bzz.php').replace('/bzzr:', '/proxy/bzzr.php');
                 }
 
+                console.log(url);
+
                 return url;
             };
 
@@ -458,28 +460,21 @@
                 // todo angular file uploading:
                 // https://github.com/danialfarid/ng-file-upload#usage
                 //http://jsfiddle.net/danialfarid/maqbzv15/1118/
-                this.readFile(file, function(data){
-                    console.log('Yeah file');
-                });
-
-                /*var file = $scope.newFolderFile;
-                 var fd = new FormData();
-                 fd.append('file', file);
-                 $http.put(putUrl, {
-                 "entries": [
-                 {
-                 "hash": "",
-                 "contentType": "text/json",
-                 "path": path
-                 }
-                 ]
-                 }).success(function (data) {
-                 self.deferredHandler(data, deferred);
-                 }).error(function (data) {
-                 self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
-                 })['finally'](function () {
-                 self.inprocess = false;
+                /*this.readFile(file, function(data){
+                 console.log('Yeah file');
                  });*/
+
+                //var file = $scope.newFolderFile;
+                /*var fd = new FormData();
+                 fd.append('file', file);*/
+                $http.put(putUrl, "Hello world").success(function (data) {
+                    console.log("answer is " + data);
+                    self.deferredHandler(data, deferred);
+                }).error(function (data) {
+                    self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
+                })['finally'](function () {
+                    self.inprocess = false;
+                });
 
                 return deferred.promise;
             };
