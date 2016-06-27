@@ -10,6 +10,7 @@
                 this.currentPath = [];
                 this.history = [];
                 this.error = '';
+                this.swarmPath = [];
 
                 this.onRefresh = function () {
                 };

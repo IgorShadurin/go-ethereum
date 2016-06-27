@@ -291,8 +291,8 @@
                     <input class="form-control" ng-model="singleSelection().tempModel.name" autofocus="autofocus">
                     <div ng-include data-src="'error-bar'" class="clearfix"></div>
                     <label class="radio">{{'select_root_file' | translate}}</label>
-                    <input class="form-control" style="margin-top: 20px;" type="file">
-                    <input style="margin-top: 20px;" type="checkbox" checked> {{'upload_file_to_root' | translate}}
+                    <input id="newFolderFile" class="form-control" style="margin-top: 20px;" type="file">
+                    <input id="uploadFileToRoot" style="margin-top: 20px;" type="checkbox" checked> {{'upload_file_to_root' | translate}}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal"

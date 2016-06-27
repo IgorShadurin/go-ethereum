@@ -429,30 +429,12 @@
 
                 // todo get file for root folder
                 // put it to current hash
-                var putUrl = '/bzz:/' + hash + '/' + newFolderName;
-                putUrl = this.fixUrl(putUrl);
+                var putUrlIndex = '/bzz:/' + hash + '/' + newFolderName + '/';
+                putUrlIndex = this.fixUrl(putUrlIndex);
 
                 self.inprocess = true;
                 self.error = '';
 
-                /*var json = JSON.stringify({
-                 "result": [
-                 {
-                 "time": "04:04",
-                 "day": "7",
-                 "month": "Jun",
-                 "size": "1494",
-                 "group": "860",
-                 "user": "igor.shadurin@gmail.com",
-                 "number": "1",
-                 "rights": "-rw-r--r--",
-                 "type": "file",
-                 "realName": path,
-                 "name": "DAP.txt",
-                 "date": "2016-06-07 09:21:40"
-                 }
-                 ]
-                 });*/
                 // todo check this variants:
                 //http://stackoverflow.com/questions/25152700/angularjs-put-binary-data-from-arraybuffer-to-the-server
                 //https://uncorkedstudios.com/blog/multipartformdata-file-upload-with-angularjs
@@ -460,21 +442,36 @@
                 // todo angular file uploading:
                 // https://github.com/danialfarid/ng-file-upload#usage
                 //http://jsfiddle.net/danialfarid/maqbzv15/1118/
-                /*this.readFile(file, function(data){
-                 console.log('Yeah file');
-                 });*/
-
-                //var file = $scope.newFolderFile;
-                /*var fd = new FormData();
-                 fd.append('file', file);*/
-                $http.put(putUrl, "Hello world").success(function (data) {
-                    console.log("answer is " + data);
-                    self.deferredHandler(data, deferred);
-                }).error(function (data) {
-                    self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
-                })['finally'](function () {
-                    self.inprocess = false;
-                });
+                if ($('#newFolderFile').prop('files').length) {
+                    var isUploadFileToRoot = $('#uploadFileToRoot').is(':checked');
+                    var file = $('#newFolderFile').prop('files')[0];
+                    $http.put(putUrlIndex, file).success(function (data) {
+                        console.log("putUrlIndex answer is " + data);
+                        // todo reload files list
+                        window.location = "/#/" + data;
+                        if (isUploadFileToRoot) {
+                            var putUrlFile = '/bzz:/' + data + '/' + '/index.html';
+                            putUrlFile = this.fixUrl(putUrlFile);
+                            $http.put(putUrlFile, file).success(function (data) {
+                                console.log("putUrlFile answer is " + data);
+                                window.location = "/#/" + data;
+                                self.deferredHandler(data, deferred);
+                            }).error(function (data) {
+                                self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
+                            })['finally'](function () {
+                                self.inprocess = false;
+                            });
+                        } else {
+                            self.deferredHandler(data, deferred);
+                        }
+                    }).error(function (data) {
+                        self.deferredHandler(data, deferred, $translate.instant('error_creating_folder'));
+                    })['finally'](function () {
+                        self.inprocess = false;
+                    });
+                } else {
+                    alert('Select file and try again');
+                }
 
                 return deferred.promise;
             };
