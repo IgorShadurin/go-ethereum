@@ -43,7 +43,7 @@
                 var self = this;
                 var siteHash = window.location.hash.substring(2);
                 var path = self.currentPath.join('/');
-                if (siteHash.length == 64) {
+                if (self.currentPath.length == 0) {
                     self.currentPath = ["swarm:", siteHash];
                 }
 

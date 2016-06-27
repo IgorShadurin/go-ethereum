@@ -9,6 +9,7 @@
                 this.inprocess = false;
                 this.asyncSuccess = false;
                 this.error = '';
+                this.rootJson = '';
             };
 
             ApiHandler.prototype.fixUrl = function (url) {
@@ -66,25 +67,66 @@
                 // if path starts from swarm: - get files list by bzzr protocol
                 if (path.indexOf('/swarm:') === 0) {
                     var hash = path.replace('/swarm:/', '');
-                    $http.get(this.fixUrl('/bzzr:/') + hash, data).success(function (data) {
+                    // todo if open path not use Path, use hash for this Path
+                    var url = this.fixUrl('/bzzr:/') + hash;
+                    if (self.rootJson) {
+                        // todo get hash for path
+                        var exploded = hash.split('/');
+                        if (exploded[exploded.length - 1] == '') {
+                            exploded = exploded[exploded.length - 2] + "/";
+                        } else {
+                            exploded = exploded[exploded.length - 1];
+                        }
+
+                        exploded = self.rootJson[exploded];
+                        url = this.fixUrl('/bzzr:/') + exploded.hash;
+                    }
+
+                    $http.get(url, data).success(function (data) {
+                        //if (!self.rootJson) {
+                        self.rootJson = [];
+                        $.each(data.entries, function (k, v) {
+                            self.rootJson[v.path] = v;
+                        });
+                        //}
+
                         console.log(data);
                         var convertedData = {"result": []};
                         $.each(data.entries, function (k, v) {
                             console.log(v);
-                            convertedData.result.push({
-                                "time": "07:09",
-                                "day": "7",
-                                "month": "Jun",
-                                "size": "4096",
-                                "group": "860",
-                                "user": "igor.shadurin@gmail.com",
-                                "number": "6",
-                                "rights": "drwxr-xr-x",
-                                "type": "name",
-                                "realName": v.path,
-                                "name": v.path,//.split("/").pop(),
-                                "date": "2016-06-07 09:21:40"
-                            });
+                            // check is directory
+                            if (v.contentType == "application/bzz-manifest+json") {
+                                convertedData.result.push({
+                                    "time": "07:09",
+                                    "day": "7",
+                                    "month": "Jun",
+                                    "size": "4096",
+                                    "group": "860",
+                                    "user": "igor.shadurin@gmail.com",
+                                    "number": "6",
+                                    "rights": "drwxr-xr-x",
+                                    "type": "dir",
+                                    "realName": v.path,
+                                    "name": v.path,
+                                    "date": "2016-06-07 09:21:40"
+                                });
+                            } else {
+                                convertedData.result.push({
+                                    "time": "07:09",
+                                    "day": "7",
+                                    "month": "Jun",
+                                    "size": "4096",
+                                    "group": "860",
+                                    "user": "igor.shadurin@gmail.com",
+                                    "number": "6",
+                                    "rights": "drwxr-xr-x",
+                                    "type": "file",
+                                    "realName": v.path,
+                                    "name": v.path,
+                                    "date": "2016-06-07 09:21:40"
+                                });
+                            }
+
                         });
                         dfHandler(convertedData, deferred);
                     }).error(function (data) {
@@ -445,13 +487,14 @@
                 if ($('#newFolderFile').prop('files').length) {
                     var isUploadFileToRoot = $('#uploadFileToRoot').is(':checked');
                     var file = $('#newFolderFile').prop('files')[0];
+                    var fileName = file.name;
                     $http.put(putUrlIndex, file).success(function (data) {
                         console.log("putUrlIndex answer is " + data);
                         // todo reload files list
                         window.location = "/#/" + data;
                         if (isUploadFileToRoot) {
-                            var putUrlFile = '/bzz:/' + data + '/' + '/index.html';
-                            putUrlFile = this.fixUrl(putUrlFile);
+                            var putUrlFile = '/bzz:/' + data + '/' + newFolderName + '/' + fileName;
+                            putUrlFile = self.fixUrl(putUrlFile);
                             $http.put(putUrlFile, file).success(function (data) {
                                 console.log("putUrlFile answer is " + data);
                                 window.location = "/#/" + data;
