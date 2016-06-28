@@ -126,7 +126,6 @@
                                     "date": "2016-06-07 09:21:40"
                                 });
                             }
-
                         });
                         dfHandler(convertedData, deferred);
                     }).error(function (data) {
