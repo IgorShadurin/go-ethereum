@@ -10,7 +10,166 @@
                 this.asyncSuccess = false;
                 this.error = '';
                 this.rootJson = '';
+
+                this.fullManifest = {};
+                this.manifestQueue = [];
+                this.swarmTree = {
+                    "/": {
+                        absolute_path: '',
+                        items: []
+                    }
+                };
             };
+
+            ApiHandler.prototype.buildSwarmTree = function (paths) {
+                var self = this;
+                paths.forEach(function (item) {
+                    var parts = item.split('/');
+                    var lastPartName = parts[parts.length - 1];
+                    delete parts[parts.length - 1];
+                    var rootPath = parts.join('');
+                    if (!rootPath) {
+                        rootPath = "/";
+                    }
+
+                    if (name.indexOf('.') === -1) {
+                        if (rootPath != '/') {
+                            rootPath += "/";
+                        }
+
+                        if (!self.swarmTree[rootPath]) {
+                            self.swarmTree[rootPath].items = [];
+                        }
+
+                        self.swarmTree[rootPath].items.push({
+                            "time": "07:09",
+                            "day": "7",
+                            "month": "Jun",
+                            "size": "4096",
+                            "group": "860",
+                            "user": "igor.shadurin@gmail.com",
+                            "number": "6",
+                            "rights": "drwxr-xr-x",
+                            "type": "dir",
+                            "realName": lastPartName,
+                            "name": lastPartName,
+                            "date": "2016-06-07 09:21:40"
+                        });
+                    } else {
+                        if (!self.swarmTree[rootPath]) {
+                            self.swarmTree[rootPath].items = [];
+                        }
+
+                        self.swarmTree[rootPath].items.push({
+                            "time": "07:09",
+                            "day": "7",
+                            "month": "Jun",
+                            "size": "4096",
+                            "group": "860",
+                            "user": "igor.shadurin@gmail.com",
+                            "number": "6",
+                            "rights": "drwxr-xr-x",
+                            "type": "file",
+                            "realName": lastPartName,
+                            "name": lastPartName,
+                            "date": "2016-06-07 09:21:40"
+                        });
+
+                    }
+                });
+            };
+
+            /*ApiHandler.prototype.buildSwarmTree = function (paths) {
+             var self = this;
+
+             function buildTree(parts) {
+             var lastDir = '/';
+             var abs_path = '';
+
+             parts.forEach(function (name, i) {
+             if (!name) {
+             return;
+             }
+
+             // It's a directory
+             if (name.indexOf('.') === -1) {
+             var rootPath = "/";
+             lastDir = name;
+             abs_path += lastDir + '/';
+
+             if (i != 0) {
+             rootPath = rootPath + name + "/";
+             }
+
+             if (!self.swarmTree[rootPath]) {
+             self.swarmTree[rootPath] = {
+             absolute_path: abs_path,
+             items: []
+             };
+             }
+
+             self.swarmTree[rootPath].items.push({
+             "time": "07:09",
+             "day": "7",
+             "month": "Jun",
+             "size": "4096",
+             "group": "860",
+             "user": "igor.shadurin@gmail.com",
+             "number": "6",
+             "rights": "drwxr-xr-x",
+             "type": "dir",
+             "realName": name,
+             "name": name,
+             "date": "2016-06-07 09:21:40"
+             });
+
+
+             /!*if (!self.swarmTree[name]) {
+             self.swarmTree[name] = {
+             absolute_path: abs_path,
+             items: []
+             };
+
+             self.swarmTree[lastDir].items.push({
+             "time": "07:09",
+             "day": "7",
+             "month": "Jun",
+             "size": "4096",
+             "group": "860",
+             "user": "igor.shadurin@gmail.com",
+             "number": "6",
+             "rights": "drwxr-xr-x",
+             "type": "dir",
+             "realName": name,
+             "name": name,
+             "date": "2016-06-07 09:21:40"
+             });
+             }*!/
+             } else {
+             //self.swarmTree[lastDir].files.push(name);
+             self.swarmTree[lastDir].items.push({
+             "time": "07:09",
+             "day": "7",
+             "month": "Jun",
+             "size": "4096",
+             "group": "860",
+             "user": "igor.shadurin@gmail.com",
+             "number": "6",
+             "rights": "drwxr-xr-x",
+             "type": "file",
+             "realName": name,
+             "name": name,
+             "date": "2016-06-07 09:21:40"
+             });
+             }
+             });
+             }
+
+             paths.forEach(function (path, index, array) {
+             buildTree(path.split('/'));
+             });
+             console.log(self.swarmTree);
+             };*/
 
             ApiHandler.prototype.fixUrl = function (url) {
                 function getCookie(name) {
@@ -53,104 +212,132 @@
                 var self = this;
                 var dfHandler = customDeferredHandler || self.deferredHandler;
                 var deferred = $q.defer();
-
-                var data = {
-                    action: 'list',
-                    path: path
-                };
+                console.log("path " + path);
+                /*var data = {
+                 action: 'list',
+                 path: path
+                 };*/
 
                 self.inprocess = true;
                 self.error = '';
+                var data = {};
+                data.result = self.swarmTree[path].items;
+                dfHandler(data, deferred);
+
+                /*$http.post(apiUrl, data).success(function (data) {
+                 dfHandler(data, deferred);
+                 }).error(function (data) {
+                 dfHandler(data, deferred, 'Unknown error listing, check the response');
+                 })['finally'](function () {
+                 self.inprocess = false;
+                 });*/
+
                 self.inprocess = false;
-
-                console.log(path);
-                // if path starts from swarm: - get files list by bzzr protocol
-                if (path.indexOf('/swarm:') === 0) {
-                    var hash = path.replace('/swarm:/', '');
-                    // todo if open path not use Path, use hash for this Path
-                    var url = this.fixUrl('/bzzr:/') + hash;
-                    if (self.rootJson) {
-                        // todo get hash for path
-                        var exploded = hash.split('/');
-                        if (exploded[exploded.length - 1] == '') {
-                            exploded = exploded[exploded.length - 2] + "/";
-                        } else {
-                            exploded = exploded[exploded.length - 1];
-                        }
-
-                        exploded = self.rootJson[exploded];
-                        url = this.fixUrl('/bzzr:/') + exploded.hash;
-                    }
-
-                    $http.get(url, data).success(function (data) {
-                        //if (!self.rootJson) {
-                        self.rootJson = [];
-                        $.each(data.entries, function (k, v) {
-                            self.rootJson[v.path] = v;
-                        });
-                        //}
-
-                        console.log(data);
-                        var convertedData = {"result": []};
-                        $.each(data.entries, function (k, v) {
-                            console.log(v);
-                            // check is directory
-                            if (v.contentType == "application/bzz-manifest+json") {
-                                convertedData.result.push({
-                                    "time": "07:09",
-                                    "day": "7",
-                                    "month": "Jun",
-                                    "size": "4096",
-                                    "group": "860",
-                                    "user": "igor.shadurin@gmail.com",
-                                    "number": "6",
-                                    "rights": "drwxr-xr-x",
-                                    "type": "dir",
-                                    "realName": v.path,
-                                    "name": v.path,
-                                    "date": "2016-06-07 09:21:40"
-                                });
-                            } else {
-                                convertedData.result.push({
-                                    "time": "07:09",
-                                    "day": "7",
-                                    "month": "Jun",
-                                    "size": "4096",
-                                    "group": "860",
-                                    "user": "igor.shadurin@gmail.com",
-                                    "number": "6",
-                                    "rights": "drwxr-xr-x",
-                                    "type": "file",
-                                    "realName": v.path,
-                                    "name": v.path,
-                                    "date": "2016-06-07 09:21:40"
-                                });
-                            }
-                        });
-                        dfHandler(convertedData, deferred);
-                    }).error(function (data) {
-                        dfHandler(data, deferred, 'Unknown error listing, check the response');
-                    })['finally'](function () {
-                        self.inprocess = false;
-                    });
-
-                    return deferred.promise;
-                }
-
-                if (path.slice(-1) != '/') {
-                    path = path + '/';
-                }
-
-                $http.get("files" + path + 'files.json', data).success(function (data) {
-                    console.log(data);
-                    dfHandler(data, deferred);
-                }).error(function (data) {
-                    dfHandler(data, deferred, 'Unknown error listing, check the response');
-                })['finally'](function () {
-                    self.inprocess = false;
-                });
                 return deferred.promise;
             };
+
+            /*ApiHandler.prototype.list = function (apiUrl, path, customDeferredHandler) {
+             var self = this;
+             var dfHandler = customDeferredHandler || self.deferredHandler;
+             var deferred = $q.defer();
+
+             var data = {
+             action: 'list',
+             path: path
+             };
+
+             self.inprocess = true;
+             self.error = '';
+             self.inprocess = false;
+
+             console.log(path);
+             // if path starts from swarm: - get files list by bzzr protocol
+             if (path.indexOf('/swarm:') === 0) {
+             var hash = path.replace('/swarm:/', '');
+             // todo if open path not use Path, use hash for this Path
+             var url = this.fixUrl('/bzzr:/') + hash;
+             if (self.rootJson) {
+             // todo get hash for path
+             var exploded = hash.split('/');
+             if (exploded[exploded.length - 1] == '') {
+             exploded = exploded[exploded.length - 2] + "/";
+             } else {
+             exploded = exploded[exploded.length - 1];
+             }
+
+             exploded = self.rootJson[exploded];
+             url = this.fixUrl('/bzzr:/') + exploded.hash;
+             }
+
+             $http.get(url, data).success(function (data) {
+             //if (!self.rootJson) {
+             self.rootJson = [];
+             $.each(data.entries, function (k, v) {
+             self.rootJson[v.path] = v;
+             });
+             //}
+
+             console.log(data);
+             var convertedData = {"result": []};
+             $.each(data.entries, function (k, v) {
+             console.log(v);
+             // check is directory
+             if (v.contentType == "application/bzz-manifest+json") {
+             convertedData.result.push({
+             "time": "07:09",
+             "day": "7",
+             "month": "Jun",
+             "size": "4096",
+             "group": "860",
+             "user": "igor.shadurin@gmail.com",
+             "number": "6",
+             "rights": "drwxr-xr-x",
+             "type": "dir",
+             "realName": v.path,
+             "name": v.path,
+             "date": "2016-06-07 09:21:40"
+             });
+             } else {
+             convertedData.result.push({
+             "time": "07:09",
+             "day": "7",
+             "month": "Jun",
+             "size": "4096",
+             "group": "860",
+             "user": "igor.shadurin@gmail.com",
+             "number": "6",
+             "rights": "drwxr-xr-x",
+             "type": "file",
+             "realName": v.path,
+             "name": v.path,
+             "date": "2016-06-07 09:21:40"
+             });
+             }
+             });
+             dfHandler(convertedData, deferred);
+             }).error(function (data) {
+             dfHandler(data, deferred, 'Unknown error listing, check the response');
+             })['finally'](function () {
+             self.inprocess = false;
+             });
+
+             return deferred.promise;
+             }
+
+             if (path.slice(-1) != '/') {
+             path = path + '/';
+             }
+
+             $http.get("files" + path + 'files.json', data).success(function (data) {
+             console.log(data);
+             dfHandler(data, deferred);
+             }).error(function (data) {
+             dfHandler(data, deferred, 'Unknown error listing, check the response');
+             })['finally'](function () {
+             self.inprocess = false;
+             });
+             return deferred.promise;
+             };*/
 
             ApiHandler.prototype.copy = function (apiUrl, items, path) {
                 var self = this;
@@ -516,6 +703,53 @@
                 }
 
                 return deferred.promise;
+            };
+
+            ApiHandler.prototype.downloadFullManifest = function (hash, key, onFinally) {
+                var self = this;
+                self.inprocess = true;
+                self.manifestQueue.push("lol");
+                if (!hash) {
+                    hash = window.location.hash.substring(2);
+                }
+
+                if (!key) {
+                    key = '';
+                }
+
+
+                var url = this.fixUrl('/bzzr:/') + hash;
+                //console.log("url: " + url);
+                $http.get(url, {}).success(function (data) {
+                    //console.log(data);
+                    $.each(data.entries, function (k, v) {
+                        var path = v.path;
+                        if (!path) {
+                            // handle root folder hash here
+                        }
+
+                        var keyPath = key + path;
+                        self.fullManifest[keyPath] = v.hash;
+                        if (v.contentType == "application/bzz-manifest+json") {
+                            delete self.fullManifest[keyPath];
+                            self.downloadFullManifest(v.hash, keyPath, onFinally);
+                        }
+                    });
+
+                    //console.log(self.fullManifest);
+                    //console.log(Object.keys(self.fullManifest).length);
+                    //dfHandler(convertedData, deferred);
+                }).error(function (data) {
+                    //dfHandler(data, deferred, 'Unknown error listing, check the response');
+                })['finally'](function () {
+                    self.manifestQueue.pop();
+                    if (self.manifestQueue.length == 0) {
+                        self.inprocess = false;
+                        if (onFinally) {
+                            onFinally();
+                        }
+                    }
+                });
             };
 
             return ApiHandler;

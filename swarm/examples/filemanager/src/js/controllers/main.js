@@ -343,8 +343,22 @@
 
             $scope.changeLanguage(getQueryParam('lang'));
             $scope.isWindows = getQueryParam('server') === 'Windows';
-            $scope.fileNavigator.downloadFullManifest();
-            //$scope.fileNavigator.refresh();
+            $scope.fileNavigator.apiMiddleware.apiHandler.buildSwarmTree([
+                "one",
+                "two",
+                "one/five",
+                "file1.txt",
+                "file2.txt",
+                "two/file666.txt",
+            ]);
+            $scope.fileNavigator.refresh();
+            /* $scope.fileNavigator.apiMiddleware.apiHandler.downloadFullManifest(null, null, function () {
+             console.log("looooool. end");
+             var keys = Object.keys($scope.fileNavigator.apiMiddleware.apiHandler.fullManifest);
+             //console.log(keys);
+             $scope.fileNavigator.apiMiddleware.apiHandler.buildSwarmTree(keys);
+             $scope.fileNavigator.refresh();
+             });*/
 
         }]);
 })(angular, jQuery);

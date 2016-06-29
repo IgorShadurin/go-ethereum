@@ -11,8 +11,6 @@
                 this.history = [];
                 this.error = '';
                 this.swarmPath = [];
-                this.fullManifest = {};
-                this.manifestQueue={};
 
                 this.onRefresh = function () {
                 };
@@ -43,21 +41,16 @@
 
             FileNavigator.prototype.refresh = function () {
                 var self = this;
-                var siteHash = window.location.hash.substring(2);
                 var path = self.currentPath.join('/');
-                if (self.currentPath.length == 0) {
-                    self.currentPath = ["swarm:", siteHash];
-                }
-
                 self.requesting = true;
                 self.fileList = [];
-                return self.list().then(function (data) {
-                    self.fileList = (data.result || []).map(function (file) {
+                return self.list().then(function(data) {
+                    self.fileList = (data.result || []).map(function(file) {
                         return new Item(file, self.currentPath);
                     });
                     self.buildTree(path);
                     self.onRefresh();
-                }).finally(function () {
+                }).finally(function() {
                     self.requesting = false;
                 });
             };
@@ -141,62 +134,6 @@
             FileNavigator.prototype.listHasFolders = function () {
                 return this.fileList.find(function (item) {
                     return item.model.type === 'dir';
-                });
-            };
-
-            FileNavigator.prototype.fixUrl = function (url) {
-                function getCookie(name) {
-                    var matches = document.cookie.match(new RegExp(
-                        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-                    ));
-                    return matches ? decodeURIComponent(matches[1]) : undefined;
-                }
-
-                // if is_debug enabled you can use swarm via php proxy
-                if (getCookie('is_debug') == 1) {
-                    url = url.replace('/bzz:', '/proxy/bzz.php').replace('/bzzr:', '/proxy/bzzr.php');
-                }
-
-                console.log(url);
-
-                return url;
-            };
-
-            FileNavigator.prototype.downloadFullManifest = function (hash, key) {
-                if (!hash) {
-                    hash = window.location.hash.substring(2);
-                }
-
-                if (!key) {
-                    key = '';
-                }
-
-                var self = this;
-                var url = this.fixUrl('/bzzr:/') + hash;
-                console.log("url: " + url);
-                $http.get(url, {}).success(function (data) {
-                    console.log(data);
-                    $.each(data.entries, function (k, v) {
-                        var path = v.path;
-                        if (!path) {
-                            // handle root folder hash here
-                        }
-
-                        var keyPath = key + path;
-                        self.fullManifest[keyPath] = v.hash;
-                        if (v.contentType == "application/bzz-manifest+json") {
-                            delete self.fullManifest[keyPath];
-                            self.downloadFullManifest(v.hash, keyPath);
-                        }
-                    });
-
-                    console.log(self.fullManifest);
-                    console.log(Object.keys(self.fullManifest).length);
-                    //dfHandler(convertedData, deferred);
-                }).error(function (data) {
-                    //dfHandler(data, deferred, 'Unknown error listing, check the response');
-                })['finally'](function () {
-                    //self.inprocess = false;
                 });
             };
 
