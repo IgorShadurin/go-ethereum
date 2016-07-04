@@ -20,6 +20,12 @@
             $scope.fileList = [];
             $scope.temps = [];
             $scope.swarmHash = '';
+            $scope.swarmTree = {
+                "/": {
+                    items: [],
+                    paths: []
+                }
+            };
 
             $scope.$watch('temps', function () {
                 if ($scope.singleSelection()) {
@@ -190,7 +196,7 @@
                     return;
                 }
                 if (item) {
-                    return $scope.apiMiddleware.download(item);
+                    return $scope.apiMiddleware.download(item, true, $scope.swarmTreeFull);
                 }
                 return $scope.apiMiddleware.downloadMultiple($scope.temps);
             };
@@ -377,10 +383,14 @@
              "two/two/file3.txt"]);*/
 
             $scope.swarmHash = $scope.apiMiddleware.apiHandler.swarmHash = window.location.hash.substring(2);
+            $scope.fileNavigator.apiMiddleware.apiHandler.mainScope = $scope;
             $scope.fileNavigator.apiMiddleware.apiHandler.downloadFullManifest($scope.swarmHash, null, function () {
                 console.log("looooool. end");
-                var keys = Object.keys($scope.fileNavigator.apiMiddleware.apiHandler.fullManifest);
-                $scope.fileNavigator.apiMiddleware.apiHandler.buildSwarmTree(keys);
+                /*var keys = Object.keys($scope.fileNavigator.apiMiddleware.apiHandler.fullManifest);
+                 $scope.fileNavigator.apiMiddleware.apiHandler.buildSwarmTree(keys);*/
+                var paths = $scope.fileNavigator.apiMiddleware.apiHandler.fullManifest;
+                $scope.swarmTreeFull = paths;
+                $scope.swarmTree = $scope.fileNavigator.apiMiddleware.apiHandler.buildSwarmTree(paths);
                 $scope.fileNavigator.refresh();
             });
         }]);

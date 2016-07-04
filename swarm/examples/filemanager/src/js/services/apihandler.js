@@ -10,15 +10,16 @@
                 this.asyncSuccess = false;
                 this.error = '';
                 this.rootJson = '';
+                this.mainScope = {};
 
                 this.fullManifest = {};
                 this.manifestQueue = [];
-                this.swarmTree = {
-                    "/": {
-                        items: [],
-                        paths: []
-                    }
-                };
+                /*this.swarmTree = {
+                 "/": {
+                 items: [],
+                 paths: []
+                 }
+                 };*/
                 this.swarmHash = '';
             };
 
@@ -45,7 +46,8 @@
                     };
                 }
 
-                paths.forEach(function (path) {
+                var keyPaths = Object.keys(paths);
+                keyPaths.forEach(function (path) {
                     var currentPath = [];
                     var parts = path.split('/');
                     var myPath = currentPath.join('');
@@ -80,7 +82,7 @@
                             "number": "6",
                             "rights": "drwxr-xr-x",
                             "type": "file",
-                            "realName": fileName,
+                            "realName": paths[path],
                             "name": fileName,
                             "date": "2016-06-07 09:21:40"
                         });
@@ -124,8 +126,8 @@
                     });
                 });
 
-                //return result;
-                self.swarmTree = result;
+                return result;
+                //self.swarmTree = result;
             };
 
             ApiHandler.prototype.fixUrl = function (url) {
@@ -175,7 +177,7 @@
                 self.inprocess = true;
                 self.error = '';
                 var data = {};
-                data.result = self.swarmTree[path].items;
+                data.result = self.mainScope.swarmTree[path].items;
                 dfHandler(data, deferred);
 
                 /*$http.post(apiUrl, data).success(function (data) {
@@ -357,28 +359,10 @@
                 return "files" + path;
             };
 
-            ApiHandler.prototype.download = function (apiUrl, itemPath, toFilename, downloadByAjax, forceNewWindow) {
-                var self = this;
-                //var url = this.getUrl(apiUrl, itemPath);
+            ApiHandler.prototype.download = function (apiUrl, itemPath, toFilename, downloadByAjax, forceNewWindow, swarmTree) {
+                var url = this.fixUrl('/bzz:/' + this.swarmHash + itemPath);
 
-                return !!$window.open("files" + itemPath, '_blank', '');
-                /* if (!downloadByAjax || forceNewWindow || !$window.saveAs) {
-                 !$window.saveAs && $window.console.error('Your browser dont support ajax download, downloading by default');
-                 return !!$window.open(url, '_blank', '');
-                 }*/
-
-                /*var deferred = $q.defer();
-                 self.inprocess = true;
-                 $http.get(url).success(function (data) {
-                 var bin = new $window.Blob([data]);
-                 deferred.resolve(data);
-                 $window.saveAs(bin, toFilename);
-                 }).error(function (data) {
-                 self.deferredHandler(data, deferred, $translate.instant('error_downloading'));
-                 })['finally'](function () {
-                 self.inprocess = false;
-                 });
-                 return deferred.promise;*/
+                return !!$window.open(url, '_blank', '');
             };
 
             ApiHandler.prototype.downloadMultiple = function (apiUrl, items, toFilename, downloadByAjax, forceNewWindow) {

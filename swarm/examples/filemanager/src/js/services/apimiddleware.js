@@ -72,7 +72,7 @@
                 return this.apiHandler.getUrl(fileManagerConfig.downloadFileUrl, itemPath);
             };
 
-            ApiMiddleware.prototype.download = function (item, forceNewWindow) {
+            ApiMiddleware.prototype.download = function (item, forceNewWindow, swarmTree) {
                 //TODO: add spinner to indicate file is downloading
                 var itemPath = this.getFilePath(item);
                 var toFilename = item.model.name;
@@ -86,7 +86,8 @@
                     itemPath,
                     toFilename,
                     fileManagerConfig.downloadFilesByAjax,
-                    forceNewWindow
+                    forceNewWindow,
+                    swarmTree
                 );
             };
 
