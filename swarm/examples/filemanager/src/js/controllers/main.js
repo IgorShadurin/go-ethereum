@@ -142,6 +142,7 @@
             $scope.openImagePreview = function () {
                 var item = $scope.singleSelection();
                 $scope.apiMiddleware.apiHandler.inprocess = true;
+                // todo fix src set
                 $scope.modal('imagepreview', null, true)
                     .find('#imagepreview-target')
                     .attr('src', $scope.apiMiddleware.getUrl(item))
