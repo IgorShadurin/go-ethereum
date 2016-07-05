@@ -350,44 +350,10 @@
 
             $scope.changeLanguage(getQueryParam('lang'));
             $scope.isWindows = getQueryParam('server') === 'Windows';
-            /*$scope.fileNavigator.apiMiddleware.apiHandler.buildSwarmTree([
-             "file1.txt",
-             "file2.txt",
-             "file3.txt",
-             "one/file1.txt",
-             "one/file2.txt",
-             "one/file3.txt",
-             "one/one/file1.txt",
-             "one/one/file2.txt",
-             "one/one/file3.txt",
-             "one/three/file1.txt",
-             "one/three/file2.txt",
-             "one/three/file3.txt",
-             "one/two/file1.txt",
-             "one/two/file2.txt",
-             "one/two/file3.txt",
-             "three/two/file1.txt",
-             "three/two/file2.txt",
-             "three/two/file3.txt",
-             "two/file1.txt",
-             "two/file2.txt",
-             "two/file3.txt",
-             "two/one/file1.txt",
-             "two/one/file2.txt",
-             "two/one/file3.txt",
-             "two/three/file1.txt",
-             "two/three/file2.txt",
-             "two/three/file3.txt",
-             "two/two/file1.txt",
-             "two/two/file2.txt",
-             "two/two/file3.txt"]);*/
 
             $scope.swarmHash = $scope.apiMiddleware.apiHandler.swarmHash = window.location.hash.substring(2);
             $scope.fileNavigator.apiMiddleware.apiHandler.mainScope = $scope;
             $scope.fileNavigator.apiMiddleware.apiHandler.downloadFullManifest($scope.swarmHash, null, function () {
-                console.log("looooool. end");
-                /*var keys = Object.keys($scope.fileNavigator.apiMiddleware.apiHandler.fullManifest);
-                 $scope.fileNavigator.apiMiddleware.apiHandler.buildSwarmTree(keys);*/
                 var paths = $scope.fileNavigator.apiMiddleware.apiHandler.fullManifest;
                 $scope.swarmTreeFull = paths;
                 $scope.swarmTree = $scope.fileNavigator.apiMiddleware.apiHandler.buildSwarmTree(paths);

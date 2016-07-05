@@ -14,18 +14,11 @@
 
                 this.fullManifest = {};
                 this.manifestQueue = [];
-                /*this.swarmTree = {
-                 "/": {
-                 items: [],
-                 paths: []
-                 }
-                 };*/
                 this.swarmHash = '';
             };
 
             ApiHandler.prototype.buildSwarmTree = function (paths) {
                 var result = {};
-                var self = this;
 
                 function fixPath(path) {
                     if (path != '/' && path.slice(0, 1) != '/') {
@@ -127,7 +120,6 @@
                 });
 
                 return result;
-                //self.swarmTree = result;
             };
 
             ApiHandler.prototype.fixUrl = function (url) {
@@ -179,15 +171,6 @@
                 var data = {};
                 data.result = self.mainScope.swarmTree[path].items;
                 dfHandler(data, deferred);
-
-                /*$http.post(apiUrl, data).success(function (data) {
-                 dfHandler(data, deferred);
-                 }).error(function (data) {
-                 dfHandler(data, deferred, 'Unknown error listing, check the response');
-                 })['finally'](function () {
-                 self.inprocess = false;
-                 });*/
-
                 self.inprocess = false;
                 return deferred.promise;
             };
@@ -290,15 +273,12 @@
             ApiHandler.prototype.getContent = function (apiUrl, itemPath) {
                 var self = this;
                 var deferred = $q.defer();
-                var data = {
-                    action: 'getContent',
-                    item: itemPath
-                };
-
                 self.inprocess = true;
                 self.error = '';
 
-                $http.get("files" + itemPath, data).success(function (data) {
+                var url = this.fixUrl('/bzz:/' + this.swarmHash + itemPath);
+
+                $http.get(url, {}).success(function (data) {
                     self.deferredHandler({"result": data}, deferred);
                 }).error(function (data) {
                     self.deferredHandler(data, deferred, $translate.instant('error_getting_content'));
@@ -351,11 +331,6 @@
             };
 
             ApiHandler.prototype.getUrl = function (apiUrl, path) {
-                /*var data = {
-                 action: 'download',
-                 path: path
-                 };
-                 return path && [apiUrl, $.param(data)].join('?');*/
                 return "files" + path;
             };
 
@@ -551,9 +526,7 @@
                 }
 
                 var url = this.fixUrl('/bzzr:/') + hash;
-                //console.log("url: " + url);
                 $http.get(url, {}).success(function (data) {
-                    //console.log(data);
                     $.each(data.entries, function (k, v) {
                         var path = v.path;
                         if (!path) {
@@ -567,10 +540,6 @@
                             self.downloadFullManifest(v.hash, keyPath, onFinally);
                         }
                     });
-
-                    //console.log(self.fullManifest);
-                    //console.log(Object.keys(self.fullManifest).length);
-                    //dfHandler(convertedData, deferred);
                 }).error(function (data) {
                     //dfHandler(data, deferred, 'Unknown error listing, check the response');
                 })['finally'](function () {
