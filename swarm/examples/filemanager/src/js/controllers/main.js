@@ -142,10 +142,11 @@
             $scope.openImagePreview = function () {
                 var item = $scope.singleSelection();
                 $scope.apiMiddleware.apiHandler.inprocess = true;
-                // todo fix src set
+                var url = $scope.apiMiddleware.getUrl(item);
+                url = url.replace('files/', '');
                 $scope.modal('imagepreview', null, true)
                     .find('#imagepreview-target')
-                    .attr('src', $scope.apiMiddleware.getUrl(item))
+                    .attr('src', url)
                     .unbind('load error')
                     .on('load error', function () {
                         $scope.apiMiddleware.apiHandler.inprocess = false;
