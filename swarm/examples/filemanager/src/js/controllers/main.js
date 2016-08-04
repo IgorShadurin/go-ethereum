@@ -143,7 +143,7 @@
                 var item = $scope.singleSelection();
                 $scope.apiMiddleware.apiHandler.inprocess = true;
                 var url = $scope.apiMiddleware.getUrl(item);
-                url = url.replace('files/', '');
+                url = url.replace('files/', '/bzz:/' + $scope.swarmHash + '/');
                 $scope.modal('imagepreview', null, true)
                     .find('#imagepreview-target')
                     .attr('src', url)
